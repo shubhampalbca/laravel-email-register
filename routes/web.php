@@ -27,5 +27,18 @@ Route::get('/otp',[UserController::class,'otp']);
 
 Route::post('verify-otp', [UserController::class, 'verifyOTP']);
 
-
 Route::get('students', [UserController::class, 'student']);
+
+
+
+Route::get('edit-student/{id}', [UserController::class, 'editstudent'])->name('edit-student');
+Route::put('update-student/{id}', [UserController::class, 'studentupdate']);
+
+Route::get('verify-password/{id}', [UserController::class, 'verifypassword']);
+Route::post('verify-password/{id}', [UserController::class, 'verifymatch']);
+
+
+
+Route::get('verify-delete/{id}', [UserController::class, 'verifydelete']);
+Route::post('verify-delete/{id}', [UserController::class, 'verifymatchdelete']);
+Route::get('delete-student/{id}', [UserController::class, 'deletestudent'])->name('delete-student');

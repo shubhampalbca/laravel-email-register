@@ -80,11 +80,9 @@ class UserController extends Controller
             ]);
 
             if ($validate->fails()) {
-                return response()->json([
-                    "status" => "error",
-                    "message" => "Validation failed",
-                    "errors" => $validate->errors(),
-                ]);
+                
+
+                return redirect('otp')->with('status', 'Validation failed');
             }
 
             $email = $request->session()->get('email');
@@ -127,6 +125,88 @@ class UserController extends Controller
             return view('student.index', compact('students'));
         }
         
+        public function verifypassword($id)
+        {
+            $stu_id = $id;
+            return view('student.confirm', compact('stu_id'));
+        }
+        
+        
+        public function verifymatch(Request $request, $id)
+        {
+            $request->validate([
+                'password' => 'required',
+            ]);
 
+            $student = User::find($id);
+            if (password_verify($request->password, $student->password)) {
+            
+                return redirect()->route('edit-student', ['id' => $id]);
+            } else {
+            
+                return redirect()->back()->with('status', 'Incorrect password');
+            }
+        }
+
+        public function editstudent($id)
+        {
+         
+            $student = User::find($id);
+            return view('student.edit', compact('student'));
+        }
+
+
+        public function studentupdate(Request $request, $id)
+    {
+        $rules = [
+            "name" => "required|string|min:2|max:100",
+            "mobile" => "required|string|max:100|regex:/^[0-9]{10}$/",
+            "password" => "required|confirmed|min:1"
+           ];
+
+
+        $request->validate($rules);
+
+        $student = User::find($id);
+        $student->name = $request->input('name');
+        $student->password = bcrypt($request->input('password'));
+       
+        $student->update();
+        return redirect('students')->with('status','Student Updated Successfully');
+    }
+
+
+
+    public function verifydelete($id)
+    {
+        $stu_id = $id;
+        return view('student.confirmdelete', compact('stu_id'));
+    }
+
+
+    public function verifymatchdelete(Request $request, $id)
+        {
+            $request->validate([
+                'password' => 'required',
+            ]);
+
+            $student = User::find($id);
+            if (password_verify($request->password, $student->password)) {
+            
+                return redirect()->route('delete-student', ['id' => $id]);
+            } else {
+            
+                return redirect()->back()->with('status', 'Incorrect password');
+            }
+        }
+
+        
+        public function deletestudent($id)
+        {
+         
+            $student = User::find($id);
+            $student->delete();
+            return redirect('students')->with('status','Student Updated Successfully');
+        }
 
 }
